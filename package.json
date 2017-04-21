@@ -2,13 +2,14 @@
   "name": "url-shortener",
   "version": "1.0.0",
   "description": "fcc url shortener microservice",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Sergio",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "mongodb": "^2.2.26"
   }
 }
