@@ -1,7 +1,8 @@
 var express = require('express');
 var path = require('path');
-//TODO: figure out why you are getting multiple db error
-var url = "mongodb://localhost:27017/url-shortener";
+//var url = "mongodb://localhost:27017/url-shortener";
+var url = process.env.URL_SHORTENER_DB_URI;
+console.log(url);
 var mongo = require('mongodb').MongoClient;
 
 var app = express();
