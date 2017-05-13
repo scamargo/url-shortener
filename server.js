@@ -18,6 +18,8 @@ var port = process.env.PORT || 8080;
     next();
 });*/
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', function(req,res){
       // TODO: serve landing page with instructions here   
       res.send("Hello World!");
@@ -62,7 +64,7 @@ app.get('/new', function(req,res){
     }
 }); // app.get();
 
-app.get('/:urlid', function(req,res){
+app.get('/:urlid', function(req,res){ // TODO: why is this being called every time??
     //if shortUrlId is in db, redirect to original url
     var urlid = Number(req.params["urlid"]);
     //var urlid = req.id_from_param;
