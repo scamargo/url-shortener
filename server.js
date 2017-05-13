@@ -1,25 +1,71 @@
-//TODO: return error when trying to add faulty url & return error
+
 
 (function(){ //iife
 
 var express = require('express');
 var path = require('path');
+var validUrl = require('valid-url');
 var url = process.env.URL_SHORTENER_DB_URI;
 var mongo = require('mongodb').MongoClient;
 
 var app = express();
+//var r = express.Router();
 
 var port = process.env.PORT || 8080;
-var result = {};
+
+/*r.param('urlid', function( req, res, next, id ) {
+    req.id_from_param = id;
+    next();
+});*/
 
 app.get('/', function(req,res){
       // TODO: serve landing page with instructions here   
       res.send("Hello World!");
 });
 
+app.get('/new', function(req,res){
+    console.log('new');
+    var urlParam = req.query.url;
+    var doc = {original_url : urlParam };
+    var result = {original_url: null, short_url: null, error: null};
+    var urlCount;
+    if(validUrl.isUri(urlParam))  { //if the there is a url parameter, add to db
+        
+        //get url count from db when server starts
+        mongo.connect(url, function(err, db) {
+          if(err) throw err;
+
+          var urls = db.collection('urls');
+          urls.find().sort({_id:-1}).limit(1).toArray(function(err,documents) {
+              if(err) throw err;
+
+              // get url count
+              urlCount = documents[0]["extension"] + 1;
+              doc["short_url"] = 'https://' + req.get('host') + '/' + urlCount;
+              doc["extension"] = urlCount;
+              
+              // add new item to 'urls' collection  
+              urls.insert(doc, function(err,data) {
+                if(err) throw err;
+                result.original_url = doc.original_url;
+                result.short_url = doc.short_url;
+                res.send(result);
+                db.close()
+              });
+          });
+        });
+    }
+    else {
+        result.error = "No valid url provided";
+        console.log("no valid provided");
+        res.send(result);    
+    }
+}); // app.get();
+
 app.get('/:urlid', function(req,res){
     //if shortUrlId is in db, redirect to original url
     var urlid = Number(req.params["urlid"]);
+    //var urlid = req.id_from_param;
     console.log("urlid: "+ urlid);
     
     if(!Number.isNaN(urlid)) {
@@ -47,43 +93,7 @@ app.get('/:urlid', function(req,res){
     }
 });
 
-app.get('/new', function(req,res){ // TODO: should this be a POST??
-    var urlParam = req.query.url;
-    var doc = {original_url : urlParam };
-    result = {original_url: null, short_url: null};
-    var urlCount;
-    
-    if(urlParam)  { //if the there is a url parameter, add to db
-        
-        //get url count from db when server starts
-        mongo.connect(url, function(err, db) {
-          if(err) throw err;
-
-          var urls = db.collection('urls');
-          urls.find().sort({_id:-1}).limit(1).toArray(function(err,documents) {
-              if(err) throw err;
-
-              // get url count
-              urlCount = documents[0]["extension"] + 1;
-              console.log('urlCount: '+urlCount);
-              doc["short_url"] = 'https://' + req.get('host') + '/' + urlCount;
-              doc["extension"] = urlCount;
-              
-              // add new item to 'urls' collection  
-              urls.insert(doc, function(err,data) {
-                if(err) throw err;
-                result = {original_url: doc.original_url, short_url: doc.short_url};
-                res.send(result);
-                db.close()
-              });
-          });
-        });
-    }
-    else {
-        res.send(result);    
-    }
-}); // app.get();
-
+//app.use(r);
 app.listen(port, function(){
     console.log("Port listening on: " + port);
 });
