@@ -1,0 +1,14 @@
+h1 {
+    text-align: center;
+}
+
+.container {
+    max-width: 60%;
+    margin: auto;
+}
+
+.example {
+    background-color: #f9f2f4;
+    color: #c7254e;
+    border-radius: 4px;
+}

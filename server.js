@@ -1,5 +1,3 @@
-
-
 (function(){ //iife
 
 var express = require('express');
@@ -19,11 +17,6 @@ var port = process.env.PORT || 8080;
 });*/
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.get('/', function(req,res){
-      // TODO: serve landing page with instructions here   
-      res.send("Hello World!");
-});
 
 app.get('/new', function(req,res){
     console.log('new');
