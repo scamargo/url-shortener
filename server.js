@@ -18,9 +18,8 @@ var port = process.env.PORT || 8080;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/new', function(req,res){
-    console.log('new');
-    var urlParam = req.query.url;
+app.get('/new/*', function(req,res){
+    var urlParam = req.params[0];
     var doc = {original_url : urlParam };
     var result = {original_url: null, short_url: null, error: null};
     var urlCount;
